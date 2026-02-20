@@ -648,6 +648,10 @@ enum NodeType {
   /// in terms of the element size of VEC1/VEC2, not in terms of bytes.
   VECTOR_SHUFFLE,
 
+  /// VECTOR_SWIZZLE(VEC1, VEC2, VEC3) - Returns a vector, of the same type as
+  /// VEC1/VEC2.
+  VECTOR_SWIZZLE,
+
   /// VECTOR_SPLICE_LEFT(VEC1, VEC2, OFFSET) - Shifts CONCAT_VECTORS(VEC1, VEC2)
   /// left by OFFSET elements and returns the lower half.
   VECTOR_SPLICE_LEFT,

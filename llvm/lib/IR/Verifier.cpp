@@ -588,6 +588,7 @@ private:
   void visitExtractElementInst(ExtractElementInst &EI);
   void visitInsertElementInst(InsertElementInst &EI);
   void visitShuffleVectorInst(ShuffleVectorInst &EI);
+  void visitSwizzleVectorInst(SwizzleVectorInst &EI);
   void visitVAArgInst(VAArgInst &VAA) { visitInstruction(VAA); }
   void visitCallInst(CallInst &CI);
   void visitInvokeInst(InvokeInst &II);
@@ -4434,6 +4435,13 @@ void Verifier::visitShuffleVectorInst(ShuffleVectorInst &SV) {
   Check(ShuffleVectorInst::isValidOperands(SV.getOperand(0), SV.getOperand(1),
                                            SV.getShuffleMask()),
         "Invalid shufflevector operands!", &SV);
+  visitInstruction(SV);
+}
+
+void Verifier::visitSwizzleVectorInst(SwizzleVectorInst &SV) {
+  Check(SwizzleVectorInst::isValidOperands(SV.getOperand(0), SV.getOperand(1),
+                                           SV.getOperand(2)),
+        "Invalid swizzlevector operands!", &SV);
   visitInstruction(SV);
 }
 

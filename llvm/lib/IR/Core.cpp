@@ -4419,6 +4419,13 @@ LLVMValueRef LLVMBuildShuffleVector(LLVMBuilderRef B, LLVMValueRef V1,
                                              unwrap(Mask), Name));
 }
 
+LLVMValueRef LLVMBuildSwizzleVector(LLVMBuilderRef B, LLVMValueRef V1,
+                                    LLVMValueRef V2, LLVMValueRef V3,
+                                    const char *Name) {
+  return wrap(unwrap(B)->CreateShuffleVector(unwrap(V1), unwrap(V2),
+                                             unwrap(V3), Name));
+}
+
 LLVMValueRef LLVMBuildExtractValue(LLVMBuilderRef B, LLVMValueRef AggVal,
                                    unsigned Index, const char *Name) {
   return wrap(unwrap(B)->CreateExtractValue(unwrap(AggVal), Index, Name));

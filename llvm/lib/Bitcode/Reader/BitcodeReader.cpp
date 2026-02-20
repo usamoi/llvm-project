@@ -5558,6 +5558,29 @@ Error BitcodeReader::parseFunctionBody(Function *F) {
       break;
     }
 
+    case bitc::FUNC_CODE_INST_SWIZZLEVEC: { // SWIZZLEVEC: [opval,ty,opval,opty,opval]
+      unsigned OpNum = 0;
+      Value *Vec1, *Vec2, *Vec3;
+      unsigned Vec1TypeID;
+      if (getValueTypePair(Record, OpNum, NextValueNo, Vec1, Vec1TypeID, CurBB) ||
+          popValue(Record, OpNum, NextValueNo, Vec1->getType(), Vec1TypeID,
+                   Vec2, CurBB))
+        return error("Invalid swizzlevector record");
+
+      unsigned Vec3TypeID;
+      if (getValueTypePair(Record, OpNum, NextValueNo, Vec3, Vec3TypeID, CurBB))
+        return error("Invalid swizzlevector record");
+
+      if (!SwizzleVectorInst::isValidOperands(Vec1, Vec2, Vec3))
+        return error("Invalid swizzlevector operands");
+
+      I = new SwizzleVectorInst(Vec1, Vec2, Vec3);
+      ResTypeID =
+          getVirtualTypeID(I->getType(), getContainedTypeID(Vec1TypeID));
+      InstructionList.push_back(I);
+      break;
+    }
+
     case bitc::FUNC_CODE_INST_CMP:   // CMP: [opty, opval, opval, pred]
       // Old form of ICmp/FCmp returning bool
       // Existed to differentiate between icmp/fcmp and vicmp/vfcmp which were

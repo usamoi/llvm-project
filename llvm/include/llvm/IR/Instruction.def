@@ -215,11 +215,12 @@ HANDLE_OTHER_INST(61, VAArg  , VAArgInst  )  // vaarg instruction
 HANDLE_OTHER_INST(62, ExtractElement, ExtractElementInst)// extract from vector
 HANDLE_OTHER_INST(63, InsertElement, InsertElementInst)  // insert into vector
 HANDLE_OTHER_INST(64, ShuffleVector, ShuffleVectorInst)  // shuffle two vectors.
-HANDLE_OTHER_INST(65, ExtractValue, ExtractValueInst)// extract from aggregate
-HANDLE_OTHER_INST(66, InsertValue, InsertValueInst)  // insert into aggregate
-HANDLE_OTHER_INST(67, LandingPad, LandingPadInst)  // Landing pad instruction.
-HANDLE_OTHER_INST(68, Freeze, FreezeInst) // Freeze instruction.
-  LAST_OTHER_INST(68)
+HANDLE_OTHER_INST(65, SwizzleVector, SwizzleVectorInst)  // dynamic shuffle two vectors.
+HANDLE_OTHER_INST(66, ExtractValue, ExtractValueInst)// extract from aggregate
+HANDLE_OTHER_INST(67, InsertValue, InsertValueInst)  // insert into aggregate
+HANDLE_OTHER_INST(68, LandingPad, LandingPadInst)  // Landing pad instruction.
+HANDLE_OTHER_INST(69, Freeze, FreezeInst) // Freeze instruction.
+  LAST_OTHER_INST(69)
 
 #undef  FIRST_TERM_INST
 #undef HANDLE_TERM_INST

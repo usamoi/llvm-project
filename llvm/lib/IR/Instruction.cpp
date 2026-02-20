@@ -869,6 +869,7 @@ const char *Instruction::getOpcodeName(unsigned OpCode) {
   case ExtractElement: return "extractelement";
   case InsertElement:  return "insertelement";
   case ShuffleVector:  return "shufflevector";
+  case SwizzleVector:  return "swizzlevector";
   case ExtractValue:   return "extractvalue";
   case InsertValue:    return "insertvalue";
   case LandingPad:     return "landingpad";

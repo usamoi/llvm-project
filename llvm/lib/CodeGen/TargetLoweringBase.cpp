@@ -1187,6 +1187,8 @@ void TargetLoweringBase::initActions() {
     setOperationAction({ISD::VECTOR_SPLICE_LEFT, ISD::VECTOR_SPLICE_RIGHT}, VT,
                        Expand);
 
+    setOperationAction(ISD::VECTOR_SWIZZLE, VT, Expand);
+
     // Only some target support this vector operation. Most need to expand it.
     setOperationAction(ISD::VECTOR_COMPRESS, VT, Expand);
 
@@ -2230,6 +2232,7 @@ int TargetLoweringBase::InstructionOpcodeToISD(unsigned Opcode) const {
   case ExtractElement: return ISD::EXTRACT_VECTOR_ELT;
   case InsertElement:  return ISD::INSERT_VECTOR_ELT;
   case ShuffleVector:  return ISD::VECTOR_SHUFFLE;
+  case SwizzleVector:  return ISD::VECTOR_SWIZZLE;
   case ExtractValue:   return ISD::MERGE_VALUES;
   case InsertValue:    return ISD::MERGE_VALUES;
   case LandingPad:     return 0;

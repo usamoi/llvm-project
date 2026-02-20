@@ -128,6 +128,7 @@ typedef enum {
   LLVMExtractElement = 50,
   LLVMInsertElement  = 51,
   LLVMShuffleVector  = 52,
+  LLVMSwizzleVector  = 70,
   LLVMExtractValue   = 53,
   LLVMInsertValue    = 54,
   LLVMFreeze         = 68,
@@ -5053,6 +5054,10 @@ LLVM_C_ABI LLVMValueRef LLVMBuildInsertElement(LLVMBuilderRef,
 LLVM_C_ABI LLVMValueRef LLVMBuildShuffleVector(LLVMBuilderRef, LLVMValueRef V1,
                                                LLVMValueRef V2,
                                                LLVMValueRef Mask,
+                                               const char *Name);
+LLVM_C_ABI LLVMValueRef LLVMBuildSwizzleVector(LLVMBuilderRef, LLVMValueRef V1,
+                                               LLVMValueRef V2,
+                                               LLVMValueRef V3,
                                                const char *Name);
 LLVM_C_ABI LLVMValueRef LLVMBuildExtractValue(LLVMBuilderRef,
                                               LLVMValueRef AggVal,

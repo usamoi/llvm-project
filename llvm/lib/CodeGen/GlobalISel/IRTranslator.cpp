@@ -3491,6 +3491,12 @@ bool IRTranslator::translateShuffleVector(const User &U,
   return true;
 }
 
+bool IRTranslator::translateSwizzleVector(const User &U,
+                                          MachineIRBuilder &MIRBuilder) {
+  // todo
+  return false;
+}
+
 bool IRTranslator::translatePHI(const User &U, MachineIRBuilder &MIRBuilder) {
   const PHINode &PI = cast<PHINode>(U);
 

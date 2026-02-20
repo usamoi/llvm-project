@@ -996,6 +996,13 @@ struct FunCloner {
         Dst = LLVMBuildShuffleVector(Builder, Agg0, Agg1, Mask, Name);
         break;
       }
+      case LLVMSwizzleVector: {
+        LLVMValueRef Agg0 = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef Agg1 = CloneValue(LLVMGetOperand(Src, 1));
+        LLVMValueRef Agg2 = CloneValue(LLVMGetOperand(Src, 2));
+        Dst = LLVMBuildSwizzleVector(Builder, Agg0, Agg1, Agg2, Name);
+        break;
+      }
       case LLVMFreeze: {
         LLVMValueRef Arg = CloneValue(LLVMGetOperand(Src, 0));
         Dst = LLVMBuildFreeze(Builder, Arg, Name);

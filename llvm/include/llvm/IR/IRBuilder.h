@@ -2602,6 +2602,11 @@ public:
     return CreateShuffleVector(V, PoisonValue::get(V->getType()), Mask, Name);
   }
 
+  Value *CreateSwizzleVector(Value *V1, Value *V2, Value *V3,
+                             const Twine &Name = "") {
+    return Insert(new SwizzleVectorInst(V1, V2, V3), Name);
+  }
+
   LLVM_ABI Value *CreateVectorInterleave(ArrayRef<Value *> Ops,
                                          const Twine &Name = "");
 

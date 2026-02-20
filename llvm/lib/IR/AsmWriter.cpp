@@ -4787,9 +4787,10 @@ void AssemblyWriter::printInstruction(const Instruction &I) {
     bool PrintAllTypes = false;
     Type *TheType = Operand->getType();
 
-    // Select, Store, ShuffleVector, CmpXchg and AtomicRMW always print all
-    // types.
+    // Select, Store, ShuffleVector, SwizzleVector, CmpXchg and AtomicRMW
+    // always print all types.
     if (isa<SelectInst>(I) || isa<StoreInst>(I) || isa<ShuffleVectorInst>(I) ||
+        isa<SwizzleVectorInst>(I) ||
         isa<ReturnInst>(I) || isa<AtomicCmpXchgInst>(I) ||
         isa<AtomicRMWInst>(I)) {
       PrintAllTypes = true;

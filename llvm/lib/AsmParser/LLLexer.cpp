@@ -969,6 +969,7 @@ lltok::Kind LLLexer::LexIdentifier() {
   INSTKEYWORD(extractelement, ExtractElement);
   INSTKEYWORD(insertelement,  InsertElement);
   INSTKEYWORD(shufflevector,  ShuffleVector);
+  INSTKEYWORD(swizzlevector,  SwizzleVector);
   INSTKEYWORD(extractvalue,   ExtractValue);
   INSTKEYWORD(insertvalue,    InsertValue);
   INSTKEYWORD(landingpad,     LandingPad);

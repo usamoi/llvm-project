@@ -7641,6 +7641,8 @@ int LLParser::parseInstruction(Instruction *&Inst, BasicBlock *BB,
     return parseInsertElement(Inst, PFS);
   case lltok::kw_shufflevector:
     return parseShuffleVector(Inst, PFS);
+  case lltok::kw_swizzlevector:
+    return parseSwizzleVector(Inst, PFS);
   case lltok::kw_phi: {
     FastMathFlags FMF = EatFastMathFlagsIfPresent();
     int Res = parsePHI(Inst, PFS);
@@ -8491,6 +8493,25 @@ bool LLParser::parseShuffleVector(Instruction *&Inst, PerFunctionState &PFS) {
     return error(Loc, "invalid shufflevector operands");
 
   Inst = new ShuffleVectorInst(Op0, Op1, Op2);
+  return false;
+}
+
+/// parseSwizzleVector
+///   ::= 'swizzlevector' TypeAndValue ',' TypeAndValue ',' TypeAndValue
+bool LLParser::parseSwizzleVector(Instruction *&Inst, PerFunctionState &PFS) {
+  LocTy Loc;
+  Value *Op0, *Op1, *Op2;
+  if (parseTypeAndValue(Op0, Loc, PFS) ||
+      parseToken(lltok::comma, "expected ',' after swizzle value") ||
+      parseTypeAndValue(Op1, PFS) ||
+      parseToken(lltok::comma, "expected ',' after swizzle value") ||
+      parseTypeAndValue(Op2, PFS))
+    return true;
+
+  if (!SwizzleVectorInst::isValidOperands(Op0, Op1, Op2))
+    return error(Loc, "invalid swizzlevector operands");
+
+  Inst = new SwizzleVectorInst(Op0, Op1, Op2);
   return false;
 }
 

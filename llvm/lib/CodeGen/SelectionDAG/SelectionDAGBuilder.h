@@ -606,6 +606,7 @@ private:
   void visitExtractElement(const User &I);
   void visitInsertElement(const User &I);
   void visitShuffleVector(const User &I);
+  void visitSwizzleVector(const User &I);
 
   void visitExtractValue(const ExtractValueInst &I);
   void visitInsertValue(const InsertValueInst &I);

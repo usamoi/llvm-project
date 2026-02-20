@@ -3222,6 +3222,12 @@ void ModuleBitcodeWriter::writeInstruction(const Instruction &I,
     pushValue(cast<ShuffleVectorInst>(I).getShuffleMaskForBitcode(), InstID,
               Vals);
     break;
+  case Instruction::SwizzleVector:
+    Code = bitc::FUNC_CODE_INST_SWIZZLEVEC;
+    pushValueAndType(I.getOperand(0), InstID, Vals);
+    pushValue(I.getOperand(1), InstID, Vals);
+    pushValueAndType(I.getOperand(2), InstID, Vals);
+    break;
   case Instruction::ICmp:
   case Instruction::FCmp: {
     // compare returning Int1Ty or vector of Int1Ty

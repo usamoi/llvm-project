@@ -1376,6 +1376,8 @@ X86TargetLowering::X86TargetLowering(const X86TargetMachine &TM,
     setOperationAction(ISD::ADD,                MVT::i32, Custom);
     setOperationAction(ISD::SUB,                MVT::i16, Custom);
     setOperationAction(ISD::SUB,                MVT::i32, Custom);
+
+    setOperationAction(ISD::VECTOR_SWIZZLE,     MVT::v16i8, Custom);
   }
 
   if (!Subtarget.useSoftFloat() && Subtarget.hasSSE41()) {
@@ -18892,6 +18894,25 @@ static SDValue lowerVECTOR_SHUFFLE(SDValue Op, const X86Subtarget &Subtarget,
   llvm_unreachable("Unimplemented!");
 }
 
+static SDValue lowerVECTOR_SWIZZLE(SDValue Op, const X86Subtarget &Subtarget,
+                                   SelectionDAG &DAG) {
+  SDLoc DL(Op);
+  SDValue Src1 = Op.getOperand(0);
+  SDValue Src2 = Op.getOperand(1);
+  SDValue Src3 = Op.getOperand(2);
+  MVT VT = Op.getSimpleValueType();
+  MVT SrcVT = Src1.getSimpleValueType();
+  MVT IdxVT = Src3.getSimpleValueType();
+
+  if (SrcVT == MVT::v16i8 && IdxVT == MVT::v16i8 && Src2.isUndef()) {
+    if (Subtarget.hasSSSE3()) {
+      return DAG.getNode(X86ISD::PSHUFB, DL, VT, Src1, Src3);
+    }
+  }
+
+  return SDValue();
+}
+
 // As legal vpcompress instructions depend on various AVX512 extensions, try to
 // convert illegal vector sizes to legal ones to avoid expansion.
 static SDValue lowerVECTOR_COMPRESS(SDValue Op, const X86Subtarget &Subtarget,
@@ -34092,6 +34113,7 @@ SDValue X86TargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
   case ISD::BUILD_VECTOR:       return LowerBUILD_VECTOR(Op, DAG);
   case ISD::CONCAT_VECTORS:     return LowerCONCAT_VECTORS(Op, Subtarget, DAG);
   case ISD::VECTOR_SHUFFLE:     return lowerVECTOR_SHUFFLE(Op, Subtarget, DAG);
+  case ISD::VECTOR_SWIZZLE:     return lowerVECTOR_SWIZZLE(Op, Subtarget, DAG);
   case ISD::VECTOR_COMPRESS:    return lowerVECTOR_COMPRESS(Op, Subtarget, DAG);
   case ISD::VSELECT:            return LowerVSELECT(Op, DAG);
   case ISD::EXTRACT_VECTOR_ELT: return LowerEXTRACT_VECTOR_ELT(Op, DAG);

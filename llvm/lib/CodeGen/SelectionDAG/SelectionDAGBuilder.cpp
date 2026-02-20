@@ -4356,6 +4356,43 @@ void SelectionDAGBuilder::visitShuffleVector(const User &I) {
   setValue(&I, DAG.getBuildVector(VT, DL, Ops));
 }
 
+void SelectionDAGBuilder::visitSwizzleVector(const User &I) {
+  SDValue Src1 = getValue(I.getOperand(0));
+  SDValue Src2 = getValue(I.getOperand(1));
+  SDValue Src3 = getValue(I.getOperand(2));
+
+  SDLoc DL = getCurSDLoc();
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  EVT VT = TLI.getValueType(DAG.getDataLayout(), I.getType());
+  if (TLI.isOperationLegalOrCustom(ISD::VECTOR_SWIZZLE, VT)) {
+    setValue(&I, DAG.getNode(ISD::VECTOR_SWIZZLE, DL, VT, Src1, Src2, Src3));
+    return;
+  }
+
+  unsigned int InLaneCount = Src1.getValueType().getVectorNumElements();
+  unsigned int OutLaneCount = Src3.getValueType().getVectorNumElements();
+  EVT LaneType = Src1.getValueType().getVectorElementType();
+  EVT IdxType = Src3.getValueType().getVectorElementType();
+  EVT CCVT = TLI.getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), IdxType);
+
+  SmallVector<SDValue,8> Ops;
+
+  for (unsigned Lane = 0; Lane != OutLaneCount; ++Lane) {
+    SDValue N = DAG.getConstant(static_cast<unsigned long>(InLaneCount), DL, IdxType);
+    SDValue I = DAG.getVectorIdxConstant(Lane, DL);
+    SDValue Idx = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, IdxType, Src3, I);
+    SDValue Idx1 = Idx;
+    SDValue Idx2 = DAG.getNode(ISD::SUB, DL, IdxType, Idx, N);
+    SDValue Val1 = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, LaneType, Src1, Idx1);
+    SDValue Val2 = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, LaneType, Src2, Idx2);
+    SDValue Cond = DAG.getSetCC(DL, CCVT, Idx, N, ISD::SETULT);
+    SDValue Res = DAG.getSelect(DL, LaneType, Cond, Val1, Val2);
+    Ops.push_back(Res);
+  }
+
+  setValue(&I, DAG.getBuildVector(VT, DL, Ops));
+}
+
 void SelectionDAGBuilder::visitInsertValue(const InsertValueInst &I) {
   ArrayRef<unsigned> Indices = I.getIndices();
   const Value *Op0 = I.getOperand(0);

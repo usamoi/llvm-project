@@ -1855,6 +1855,40 @@ bool ShuffleVectorInst::isValidOperands(const Value *V1, const Value *V2,
   return false;
 }
 
+//===----------------------------------------------------------------------===//
+//                      SwizzleVectorInst Implementation
+//===----------------------------------------------------------------------===//
+
+SwizzleVectorInst::SwizzleVectorInst(Value *V1, Value *V2, Value *V3,
+                                     const Twine &Name,
+                                     InsertPosition InsertBefore)
+    : Instruction(V1->getType(), SwizzleVector, AllocMarker, InsertBefore) {
+  assert(isValidOperands(V1, V2, Mask) &&
+         "Invalid swizzle vector instruction operands!");
+  Op<0>() = V1;
+  Op<1>() = V2;
+  Op<2>() = V3;
+  setName(Name);
+}
+
+bool SwizzleVectorInst::isValidOperands(const Value *V1, const Value *V2,
+                                        const Value *V3) {
+  // V1 and V2 must be vectors of the same type.
+  if (!V1->getType()->isVectorTy() || V1->getType() != V2->getType())
+    return false;
+
+  // V3 must be an integer vector.
+  auto *V3VT = dyn_cast<VectorType>(V3->getType());
+  if (!V3VT || !V3VT->getElementType()->isIntegerTy())
+    return false;
+
+  // Scalable vectors are not supported.
+  if (isa<ScalableVectorType>(V1->getType()) || isa<ScalableVectorType>(V3->getType()))
+    return false;
+
+  return true;
+}
+
 void ShuffleVectorInst::getShuffleMask(const Constant *Mask,
                                        SmallVectorImpl<int> &Result) {
   ElementCount EC = cast<VectorType>(Mask->getType())->getElementCount();
@@ -4486,6 +4520,10 @@ InsertElementInst *InsertElementInst::cloneImpl() const {
 
 ShuffleVectorInst *ShuffleVectorInst::cloneImpl() const {
   return new ShuffleVectorInst(getOperand(0), getOperand(1), getShuffleMask());
+}
+
+SwizzleVectorInst *SwizzleVectorInst::cloneImpl() const {
+  return new SwizzleVectorInst(getOperand(0), getOperand(1), getOperand(2));
 }
 
 PHINode *PHINode::cloneImpl() const { return new (AllocMarker) PHINode(*this); }
